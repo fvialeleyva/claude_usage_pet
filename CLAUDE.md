@@ -394,3 +394,19 @@ persona real identificable, señalarlo antes de integrarlo.
   original para las opciones de firma.
 - No reproducir personajes con marca registrada ni likeness de personas
   reales en ningún asset nuevo (ver sección de Personalización).
+- **Decisión deliberada: NO implementar refresh de OAuth token propio.**
+  Franco reportó (2026-08-16) que el token expiró y tener Claude Code
+  Desktop abierto de fondo no lo renovó — solo se arregló mandándole un
+  mensaje a Claude Code. Se evaluó que la app hiciera el refresh sola
+  (como hace Claude Code internamente contra su propio endpoint OAuth) y
+  se descartó a propósito: implicaría reimplementar un protocolo OAuth no
+  documentado (endpoint/client_id no verificados, no confirmar por prueba
+  y error contra la cuenta real de Franco) y, más grave, escribir sobre
+  `~/.claude/.credentials.json` — el mismo archivo que usa el Claude Code
+  real, con riesgo de corromper su sesión de verdad si algo sale mal. En
+  su lugar (v0.1.1) se mejoraron los mensajes de error en
+  `src/data/usage.js` para ser claros y accionables sin mencionar la
+  terminal. Si se reconsidera esto en el futuro, no intentarlo sin
+  verificar el protocolo exacto contra documentación real (no
+  adivinando), y nunca sin un mecanismo de escritura seguro (archivo
+  temporal + rename) que preserve el resto del contenido del archivo.
