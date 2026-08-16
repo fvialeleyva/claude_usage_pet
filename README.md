@@ -59,3 +59,9 @@ Genera `dist/Claude Usage Pet Setup.exe` (NSIS, Windows) con
 ## Licencia
 
 [MIT](LICENSE)
+
+## Firma de código
+
+Este proyecto está en proceso de conseguir firma de código gratuita para
+sus instaladores a través de [SignPath Foundation](https://signpath.org).
+Ver la [política de firma](CODE_SIGNING_POLICY.md) del proyecto.
