@@ -5,6 +5,12 @@ Claude (límite de 5h, semanal, créditos) con una mascota flotante
 personalizable. No oficial, no afiliado a Anthropic. Plan original en
 `C:\Users\f_via\Documents\FV\Job Search 2026\Claude Usage Pet\plan-claude-usage-pet.md`.
 
+Repo público: https://github.com/fvialeleyva/claude_usage_pet (MIT). Local
+y GitHub están sincronizados vía `git remote origin` + `gh` CLI (instalado
+por Claude Code con `winget install --id GitHub.cli`, autenticado como
+`fvialeleyva`). Primer release (`v0.1.0`, marcado pre-release por no estar
+firmado) ya está publicado con el instalador de la Fase 5.
+
 ## Cómo correr la app
 
 ```bash
@@ -127,19 +133,33 @@ spike/check-usage.js       — script standalone de la Fase 0, sigue sirviendo
 - `.gitignore` (`node_modules/`, `dist/`, `*.log`) — el proyecto todavía
   no es un repo git, pero queda listo para cuando se inicialice.
 
+**Hecho (actualizado — ya no está pendiente):**
+- **Repo público en GitHub** — https://github.com/fvialeleyva/claude_usage_pet
+  (MIT, ver arriba). `README.md` con el disclaimer de "no oficial, no
+  afiliado a Anthropic" ya escrito. `LICENSE` (MIT) agregado. Primer
+  release `v0.1.0` (pre-release, instalador sin firmar) publicado.
+
 **Pendiente — depende de que Franco decida/gestione algo, no de código:**
 - **Firma de código Windows.** Sin esto, SmartScreen va a mostrar "editor
-  desconocido" a cualquiera que no sea Franco corriendo el instalador. El
-  plan original sugiere cotizar Azure Trusted Signing como alternativa
-  más barata a un certificado EV tradicional. No se avanzó porque implica
-  un gasto/trámite que le corresponde decidir a él.
-- **Repo público en GitHub + `electron-updater` contra GitHub Releases.**
-  El proyecto no es un repo git todavía (ver `.gitignore` de arriba, ya
-  preparado para cuando se inicialice). Auto-updater necesita el repo
-  público existiendo primero.
-- **README con disclaimer** ("no oficial, no afiliado a Anthropic, usa un
-  endpoint no documentado") — tiene sentido escribirlo junto con el paso
-  de hacer el repo público, no antes.
+  desconocido" a cualquiera que no sea Franco corriendo el instalador.
+  **Ojo: el plan original recomendaba Azure Trusted Signing — ya NO es
+  viable.** Verificado en esta sesión (2026-08-15): Microsoft pausó el
+  alta de desarrolladores individuales desde abril 2025 (solo
+  organizaciones de EE.UU./Canadá con 3+ años de historial), y aun antes
+  de esa pausa el registro individual ya estaba limitado a EE.UU./Canadá
+  — nunca hubiera aplicado para Franco. **Camino elegido por Franco:
+  SignPath Foundation** (firma gratis para proyectos open source — este
+  proyecto ya califica: licencia MIT/OSI-approved, código público, ya
+  tiene un release). Requiere algo de estructura (roles autor/revisor/
+  aprobador, 2FA, una "política de firma" publicada) y la aprobación no
+  es instantánea — ver guía paso a paso que se le dio a Franco en esta
+  sesión (no repetida acá porque el proceso puede cambiar; recheckear
+  signpath.org/terms.html si se retoma esto en una sesión futura).
+  Alternativa paga descartada por ahora (SSL.com/Certum, ~USD 200-450/año,
+  más rápida pero no gratis) — queda como plan B si SignPath no prospera.
+- **`electron-updater` contra GitHub Releases** — ahora que el repo es
+  público y ya hay un release, es viable técnicamente. No implementado
+  todavía; siguiente paso lógico de Fase 5 si Franco lo pide.
 - **Notarización Mac** — el plan original cubre Windows y Mac, pero todo
   el desarrollo real fue Windows-only hasta ahora; no hay nada Mac que
   empaquetar todavía.
