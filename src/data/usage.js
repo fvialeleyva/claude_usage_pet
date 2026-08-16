@@ -5,6 +5,7 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const { getDesktopUsage } = require("./desktop-usage");
 
 const USAGE_URL = "https://api.anthropic.com/api/oauth/usage";
 const CREDENTIALS_PATH = path.join(os.homedir(), ".claude", ".credentials.json");
@@ -86,6 +87,7 @@ function normalize(raw, subscriptionType) {
 
   return {
     ok: true,
+    source: "claude-code",
     subscriptionType,
     fiveHour: {
       usedPct: typeof fh.utilization === "number" ? fh.utilization : null,
@@ -103,26 +105,50 @@ function normalize(raw, subscriptionType) {
   };
 }
 
+// Si Claude Code falla, intentamos con el historial de la app de escritorio
+// (desktop-usage.js) antes de rendirnos — pensado para gente que usa Claude
+// "normal" y nunca instaló Claude Code. Si ninguna de las dos apps está
+// instalada, un solo mensaje genérico es más claro que pegar los dos
+// mensajes específicos uno atrás del otro; si al menos una SÍ está
+// instalada, su mensaje (ya pensado para esa app puntual) es el más útil.
+function combineFailures(codeResult, desktopResult) {
+  const codeInstalled = codeResult.reason !== "no-credentials-file";
+  const desktopInstalled = desktopResult.reason !== "no-desktop-history";
+
+  if (!codeInstalled && !desktopInstalled) {
+    return {
+      ok: false,
+      reason: "no-session-anywhere",
+      message:
+        'No encontramos ninguna sesión de Claude en esta compu. Abrí Claude Code o la app de escritorio de Claude e iniciá sesión, después volvé a tocar "Reintentar" acá.',
+    };
+  }
+
+  return codeInstalled ? codeResult : desktopResult;
+}
+
 /**
  * Devuelve siempre un objeto, nunca lanza. En caso de fallo:
  * { ok: false, reason, message }
  */
 async function getUsage() {
   const token = loadToken();
-  if (!token.ok) {
-    return token;
+
+  if (token.ok) {
+    try {
+      const raw = await fetchRawUsage(token.accessToken);
+      return normalize(raw, token.subscriptionType);
+    } catch (err) {
+      token.ok = false;
+      token.reason = "fetch-failed";
+      token.message = `No se pudo leer el uso (el endpoint no documentado pudo haber cambiado): ${err.message}`;
+    }
   }
 
-  try {
-    const raw = await fetchRawUsage(token.accessToken);
-    return normalize(raw, token.subscriptionType);
-  } catch (err) {
-    return {
-      ok: false,
-      reason: "fetch-failed",
-      message: `No se pudo leer el uso (el endpoint no documentado pudo haber cambiado): ${err.message}`,
-    };
-  }
+  const desktop = getDesktopUsage();
+  if (desktop.ok) return desktop;
+
+  return combineFailures(token, desktop);
 }
 
 module.exports = { getUsage, CREDENTIALS_PATH, USAGE_URL };

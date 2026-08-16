@@ -60,7 +60,12 @@ function render(usage) {
       : `$${usage.credits.spentUSD.toFixed(2)} ${usage.credits.currency}`;
 
   const fetched = new Date(usage.fetchedAt);
-  els.fetchedAt.textContent = `Actualizado ${fetched.toLocaleTimeString("es-AR")}`;
+  // Cuando el dato viene del historial de la app de escritorio (fallback
+  // sin Claude Code, o Claude Code caído/limitado) faltan plan, créditos
+  // y fecha de reseteo — no es un bug, esa fuente no los tiene. Se aclara
+  // acá para que no parezca que el panel se rompió.
+  const sourceNote = usage.source === "desktop-history" ? " · vía app de escritorio" : "";
+  els.fetchedAt.textContent = `Actualizado ${fetched.toLocaleTimeString("es-AR")}${sourceNote}`;
 }
 
 // Fallback solo para inspeccionar visualmente el panel abriendo este HTML

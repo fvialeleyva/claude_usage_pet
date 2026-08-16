@@ -2,7 +2,9 @@
 
 Widget de escritorio Windows (Electron) estilo Clippy que muestra el uso de
 Claude (límite de 5h, semanal, créditos) con una mascota flotante
-personalizable. No oficial, no afiliado a Anthropic. Plan original en
+personalizable. No oficial, no afiliado a Anthropic. Funciona con Claude
+Code O con la app de escritorio de Claude "normal" (ver "Fuente de datos"
+más abajo) — no hace falta ser desarrollador para usarlo. Plan original en
 `C:\Users\f_via\Documents\FV\Job Search 2026\Claude Usage Pet\plan-claude-usage-pet.md`.
 
 Repo público: https://github.com/fvialeleyva/claude_usage_pet (MIT). Local
@@ -56,8 +58,16 @@ por el instalador — útil para smoke-test rápido). Matar los
 
 ```
 src/
-  data/usage.js          — capa de datos: lee el token, llama al endpoint,
-                            nunca tira excepción sin contexto ({ok:false,...})
+  data/
+    usage.js              — capa de datos primaria (Claude Code): lee el
+                            token, llama al endpoint, nunca tira excepción
+                            sin contexto ({ok:false,...}). Si Claude Code
+                            falla por lo que sea, cae sola a
+                            desktop-usage.js antes de reportar error — ver
+                            sección dedicada "Fuente de datos" más abajo.
+    desktop-usage.js       — capa de datos de respaldo (app de escritorio
+                            de Claude "normal"): lee un historial local
+                            que esa app ya escribe sola, sin token/OAuth.
   main/
     main.js               — proceso principal: tray, todas las ventanas,
                              polling, IPC
@@ -67,6 +77,8 @@ src/
                                (%APPDATA%/claude-usage-pet/pet-window-state.json)
     pet-appearance.js       — persiste skin elegido + accesorios
                                (pet-appearance.json, mismo directorio)
+    custom-skin.js           — skin propio del usuario (ver sección
+                                dedicada en Personalización)
     notifications.js        — umbrales 50/90, con reseteo cuando el % baja
     settings.js              — preferencias de la app (hoy: autostart),
                                pet-settings.json en el mismo directorio
@@ -103,6 +115,60 @@ scripts/
 spike/check-usage.js       — script standalone de la Fase 0, sigue sirviendo
                               para diagnosticar la conexión sin abrir la app
 ```
+
+## Fuente de datos: Claude Code + fallback a la app de escritorio
+
+Agregado 2026-08-16, a pedido de Franco (quería poder pasarle el widget a
+amigos que usan Claude fuerte pero nunca instalaron Claude Code).
+
+**El hallazgo:** la app de escritorio de Claude "normal" (no Code) guarda
+sola, sin que se le pida nada, un historial local de su propio uso en
+`%APPDATA%/Claude/plan-usage-history.json` — formato `{ version, samples:
+[{ t, org, u: { fh, sd } }] }` donde `fh` = % del límite de 5h y `sd` = %
+del semanal (mismos dos números que ya mostrábamos). **Nunca vence** —
+a diferencia del token OAuth de Claude Code, no hace falta refrescar nada,
+solo que la app haya escrito una muestra reciente.
+
+Verificado a mano en la máquina de Franco (2026-08-16): escribe una
+muestra nueva cada ~15 min mientras la app está activa (de ahí sale el
+`STALE_AFTER_MS` de 30 min en `desktop-usage.js` — el doble del intervalo
+típico, no un número inventado). **Solo confirmado en esa máquina/versión
+— no hay garantía de que exista igual en todas las instalaciones**, mismo
+nivel de "no documentado" que el resto del proyecto.
+
+**Cómo se combinan (`getUsage()` en `usage.js`):**
+1. Intenta Claude Code primero (token + endpoint en vivo) — es la fuente
+   más completa: trae plan, créditos gastados y fecha de reseteo, que el
+   historial de escritorio no tiene.
+2. Si Claude Code falla por lo que sea (sin token, vencido, o el fetch
+   tira error — incluido rate limit 429, verificado en vivo el mismo día
+   que se armó esto: nuestro propio testing agresivo dejó el endpoint
+   limitado un rato y el fallback lo cubrió sin que hiciera falta ni
+   avisar), prueba con el historial de escritorio.
+3. Si ninguna de las dos funciona, `combineFailures()` decide qué mensaje
+   mostrar: si NINGUNA app está instalada, un mensaje genérico que
+   menciona ambas opciones; si al menos una SÍ está instalada, se muestra
+   el mensaje específico de esa (más accionable que uno genérico).
+
+**En la UI:** el shape de `usage` ahora tiene un campo `source`
+(`"claude-code"` | `"desktop-history"`). Cuando viene del historial de
+escritorio, `subscriptionType`, `credits.spentUSD` y los `resetsAt` vienen
+en `null` — la UI existente ya sabe mostrar "—"/"N/D" para eso sin cambios
+(`renderer/renderer.js`), solo se agregó una nota "· vía app de
+escritorio" al lado del timestamp para que no parezca que el panel se
+rompió cuando faltan esos campos. `severityFor()` en `pet.js` y
+`notifications.js` no necesitaron ningún cambio — ya operaban solo sobre
+`fiveHour.usedPct`/`weekly.usedPct`, agnósticos a la fuente.
+
+**No probado en vivo el flujo completo dentro de Electron** (mismo motivo
+que el skin propio: la app instalada de Franco estaba corriendo y
+comparte el lock de instancia única con dev). Sí se probó `getUsage()`
+end-to-end fuera de Electron (`node -e "require('./src/data/usage.js')
+.getUsage()..."` — funciona sin Electron porque solo usa `fs`/`os`/
+`fetch`, nada de `electron` en este módulo) contra los archivos reales de
+Franco, incluido el caso real de fallback por 429. Si algo falla dentro
+de la app empaquetada, sospechar primero del lado IPC/main.js (que si no
+tocamos) antes que de esta capa de datos.
 
 ## Fase 5 — empaquetado (en progreso)
 
@@ -430,6 +496,12 @@ persona real identificable, señalarlo antes de integrarlo.
   gracia ya está resuelto (mensajes de error claros + reintento), pero si
   cambia el *formato* de la respuesta, `src/data/usage.js` necesita
   ajuste.
+- Mismo riesgo, segunda vez: `plan-usage-history.json` (la fuente de
+  `desktop-usage.js`) es igual de no-documentado y solo se verificó en
+  una máquina — si Anthropic cambia esa ruta/formato en una actualización
+  de la app de escritorio, el fallback deja de funcionar silenciosamente
+  (cae a `no-desktop-history`, no rompe nada, pero ya no cubre a la gente
+  sin Claude Code).
 - Todavía sin firmar/empaquetar — Windows SmartScreen va a asustar a
   cualquiera que no sea Franco corriendo esto. Ver Fase 5 del plan
   original para las opciones de firma.
