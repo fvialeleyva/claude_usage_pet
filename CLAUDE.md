@@ -160,9 +160,25 @@ spike/check-usage.js       — script standalone de la Fase 0, sigue sirviendo
 - **`electron-updater` contra GitHub Releases** — ahora que el repo es
   público y ya hay un release, es viable técnicamente. No implementado
   todavía; siguiente paso lógico de Fase 5 si Franco lo pide.
-- **Notarización Mac** — el plan original cubre Windows y Mac, pero todo
-  el desarrollo real fue Windows-only hasta ahora; no hay nada Mac que
-  empaquetar todavía.
+- **Mac: pendiente a propósito, no arrancar sin que Franco confirme.**
+  Discutido en esta sesión (2026-08-15/16): Franco no tiene Mac. Compilar
+  y sobre todo firmar/notarizar para Mac requiere una máquina macOS real
+  (Apple no lo permite desde Windows/Linux) más una cuenta de Apple
+  Developer (USD 99/año, la tiene que crear y pagar él). Un build de CI
+  sin firmar es técnicamente viable gratis vía GitHub Actions (el repo es
+  público, da minutos de runners Mac gratis), pero **no sirve de nada sin
+  alguien con un Mac real que lo pruebe** — la app tiene bugs de
+  compositing/ventanas específicos de Windows ya documentados arriba
+  (puntos 2-5 de "Decisiones técnicas no obvias"); Mac casi seguro va a
+  tener los suyos propios, y un CI headless no los va a detectar.
+  Franco le va a preguntar a un amigo desarrollador si tiene Mac y le
+  interesa probarlo — el repo ya es público
+  (https://github.com/fvialeleyva/claude_usage_pet) y el README ya tiene
+  instrucciones de "Correr desde el código fuente" que deberían andar tal
+  cual en Mac (la capa de datos usa `os.homedir()`, no hay nada
+  hardcodeado a Windows salvo el propio empaquetado NSIS). No iniciar
+  trabajo de empaquetado/CI para Mac hasta que haya confirmación de que
+  alguien lo va a probar de verdad.
 
 ## Decisiones técnicas no obvias (leer antes de tocar la mascota)
 
