@@ -274,7 +274,7 @@ volver a probar en Windows real:
     trae más arte nuevo, mirar primero con qué formato/fondo viene y
     adaptar el script que corresponda.
 
-## Personalización (Fase 4) — completa, 7 skins
+## Personalización (Fase 4) — completa, 7 skins de fábrica + skin propio
 
 Todos seleccionables desde "Personalizar mascota…" — se abre desde el
 menú del tray (click derecho en el ícono) Y desde click derecho sobre la
@@ -299,6 +299,47 @@ mascota misma (mismo menú, ver `pet:context-menu` en `main.js`).
 - **`mug`** — la tacita con moño, nombre visible "Muggy". De
   `Job Search 2026/Claude Usage Pet/Tacita no background.png` (esta sí
   salió con alfa real de Canva a la primera).
+
+### Skin propio (v0.1.2)
+
+Octava opción, "Mi skin" (`skin: "custom"`) — a diferencia de los otros
+7, no es arte de Franco sino que **cualquier usuario puede subir su
+propia imagen** desde "Personalizar mascota…" (botón "Elegir/Cambiar
+imagen…", diálogo nativo de archivos).
+
+- `src/main/custom-skin.js`: usa `nativeImage` de Electron (built-in, NO
+  `sharp` — esa lib es devDependency de solo build-time, no viaja
+  empaquetada en el asar) para leer, redimensionar (máx. 512px por lado,
+  preservando proporción) y reexportar como PNG.
+- Se guarda en `userData/custom-skin.png` — **no** en `assets/skins/`,
+  porque `assets/` queda dentro del `.asar` empaquetado, de solo
+  lectura. Esto es justo lo opuesto al resto de los skins (que sí son
+  arte estático empaquetado) y es la única imagen de la app que se
+  reescribe en runtime.
+- La imagen viaja a los renderers como **data URL** (`data:image/png;
+  base64,...`) vía IPC, no como ruta de archivo — evita tener que abrir
+  la CSP a `file://` arbitrario. Por eso ambos `index.html` (pet y
+  customize) tienen `img-src 'self' data:;` agregado a su CSP.
+- El radio "Mi skin" arranca `disabled` y solo se habilita cuando ya
+  existe una imagen guardada (`customSkin:get` al abrir la ventana). Si
+  no, clickearlo no haría nada útil — mejor forzar el flujo por el botón
+  "Elegir imagen…" primero. `appearance:set` en `main.js` tiene además
+  un guard de respaldo: rechaza `skin:"custom"` si `hasCustomSkin()` es
+  falso, por si algo intenta setearlo sin pasar por la UI.
+- El anillo/punto de severidad y el manejo de "es un skin de imagen" ya
+  eran genéricos (`appearance.skin !== "smiley"`), así que el skin
+  propio los hereda gratis, sin tocar esa lógica.
+- Sugerencia mostrada en la UI: imagen con fondo transparente (PNG) se
+  ve mejor — pero no se exige ni se valida, cualquier formato soportado
+  por `nativeImage` (png/jpg/jpeg/bmp/gif) funciona, solo que sin alfa
+  se va a ver como un cuadrado en vez de recortada a la silueta.
+- **No probado en vivo por mí** — Franco tenía la app instalada y
+  corriendo (mismo lock de instancia única que dev, mismo `userData` que
+  packaged, comparten `%APPDATA%/claude-usage-pet`), así que no pude
+  levantar una instancia de desarrollo en paralelo sin cortarle la app
+  que estaba usando activamente. Solo pasó `node --check` en todos los
+  archivos tocados. Si algo falla, empezar por revisar acá antes que en
+  otro lado.
 
 ### Indicador de estado (iterando — no es definitivo)
 
