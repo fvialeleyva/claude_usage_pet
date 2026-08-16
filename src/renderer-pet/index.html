@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+    <title>Claude Usage Pet</title>
+    <link rel="stylesheet" href="pet.css" />
+  </head>
+  <body>
+    <div class="drag-region" id="pet-root">
+      <button class="close-btn" id="hide-btn" title="Ocultar mascota">×</button>
+
+      <!-- Skin "Smiley": personaje propio, un blob redondo con cara. -->
+      <svg viewBox="0 0 100 100" class="pet-svg skin" id="skin-smiley">
+        <circle cx="50" cy="50" r="42" class="pet-body" />
+
+        <g id="acc-hat" class="accessory">
+          <path d="M 12,25 Q 12,2 50,2 Q 88,2 88,25 Q 69,15 50,15 Q 31,15 12,25 Z" class="hat-dome" />
+          <rect x="8" y="21" width="84" height="8" rx="4" class="hat-brim" />
+        </g>
+
+        <circle cx="36" cy="46" r="5" class="pet-eye" />
+        <circle cx="64" cy="46" r="5" class="pet-eye" />
+
+        <g id="acc-glasses" class="accessory">
+          <circle cx="36" cy="46" r="10" class="glasses-lens" />
+          <circle cx="64" cy="46" r="10" class="glasses-lens" />
+          <line x1="46" y1="46" x2="54" y2="46" class="glasses-bridge" />
+          <line x1="26" y1="45" x2="19" y2="42" class="glasses-arm" />
+          <line x1="74" y1="45" x2="81" y2="42" class="glasses-arm" />
+        </g>
+
+        <path id="pet-mouth" d="M 38 64 Q 50 72 62 64" class="pet-mouth" />
+
+        <path
+          id="acc-mustache"
+          class="accessory"
+          d="M 26,58 Q 36,47 43,57 Q 50,50 57,57 Q 64,47 74,58 Q 64,65 50,61 Q 36,65 26,58 Z"
+        />
+      </svg>
+
+      <!-- Skins de imagen: arte propio de Franco en assets/skins/. El
+           anillo de color (severidad) se dibuja alrededor vía CSS, no
+           depende de la imagen. -->
+      <div class="skin image-skin" id="skin-floppy-o">
+        <img src="../../assets/skins/floppy-o.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-monitor-max">
+        <img src="../../assets/skins/monitor-max.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-forbino-max">
+        <img src="../../assets/skins/forbino-max.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-calc-a-tron">
+        <img src="../../assets/skins/calc-a-tron.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-action">
+        <img src="../../assets/skins/action.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-mug">
+        <img src="../../assets/skins/mug.png" alt="" draggable="false" />
+      </div>
+
+      <!-- Punto de estado: solo visible con skins de imagen, ver pet.js -->
+      <div id="status-badge"></div>
+    </div>
+
+    <script src="pet.js"></script>
+  </body>
+</html>

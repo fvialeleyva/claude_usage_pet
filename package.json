@@ -1,0 +1,42 @@
+{
+  "name": "claude-usage-pet",
+  "version": "0.1.0",
+  "description": "Widget de escritorio no oficial que muestra tu uso de Claude en tiempo real, estilo Clippy de los 90s. No afiliado a Anthropic.",
+  "private": true,
+  "author": "Franco Viale Leyva",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "generate-icon": "node scripts/generate-icon.js",
+    "generate-app-icon": "node scripts/generate-app-icon.js",
+    "build": "electron-builder --win nsis"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.3"
+  },
+  "build": {
+    "appId": "com.claudeusagepet.app",
+    "productName": "Claude Usage Pet",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": ["src/**/*", "assets/**/*", "package.json"],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Claude Usage Pet"
+    }
+  }
+}

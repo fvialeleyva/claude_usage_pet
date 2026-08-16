@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+    <title>Claude Usage Pet</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <header class="panel__header">
+        <span class="panel__title">Claude Usage Pet</span>
+        <span class="panel__badge" id="plan-badge">—</span>
+      </header>
+
+      <div id="error-box" class="error-box" hidden>
+        <p id="error-message"></p>
+        <button id="retry-btn" class="retry-btn" type="button">Reintentar</button>
+      </div>
+
+      <section class="metric">
+        <div class="metric__label">
+          <span>Límite de 5 horas</span>
+          <span id="five-hour-pct">—</span>
+        </div>
+        <div class="bar">
+          <div class="bar__fill" id="five-hour-bar"></div>
+        </div>
+        <div class="metric__meta" id="five-hour-resets">—</div>
+      </section>
+
+      <section class="metric">
+        <div class="metric__label">
+          <span>Límite semanal</span>
+          <span id="weekly-pct">—</span>
+        </div>
+        <div class="bar">
+          <div class="bar__fill" id="weekly-bar"></div>
+        </div>
+        <div class="metric__meta" id="weekly-resets">—</div>
+      </section>
+
+      <section class="credits">
+        <span>Créditos gastados</span>
+        <span id="credits-spent">—</span>
+      </section>
+
+      <footer class="panel__footer">
+        <span id="fetched-at">—</span>
+        <span class="panel__disclaimer">No oficial · no afiliado a Anthropic</span>
+      </footer>
+    </main>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
