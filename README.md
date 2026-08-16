@@ -37,8 +37,8 @@ administrador (se instala solo para tu usuario).
 ## Correr desde el código fuente
 
 ```bash
-git clone https://github.com/<tu-usuario>/claude-usage-pet.git
-cd claude-usage-pet
+git clone https://github.com/fvialeleyva/claude_usage_pet.git
+cd claude_usage_pet
 npm install
 npm start
 ```
@@ -65,3 +65,9 @@ Genera `dist/Claude Usage Pet Setup.exe` (NSIS, Windows) con
 Este proyecto está en proceso de conseguir firma de código gratuita para
 sus instaladores a través de [SignPath Foundation](https://signpath.org).
 Ver la [política de firma](CODE_SIGNING_POLICY.md) del proyecto.
+
+## Privacidad
+
+Ver [PRIVACY.md](PRIVACY.md) — resumen corto: no se recolecta ni envía
+ningún dato a nadie más que a Anthropic, con tu propio token, igual que
+`/usage` en Claude Code.
