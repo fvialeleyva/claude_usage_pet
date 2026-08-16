@@ -12,6 +12,7 @@ const SKIN_IDS = [
   "skin-calc-a-tron",
   "skin-action",
   "skin-mug",
+  "skin-custom",
 ];
 
 const MOUTHS = {
@@ -73,6 +74,16 @@ function applyAppearance(appearance) {
 
 window.usagePet.onAppearanceUpdated(applyAppearance);
 window.usagePet.getAppearance().then(applyAppearance);
+
+// Skin propio: la imagen viaja como data URL (no como ruta de archivo) para
+// no tener que tocar la Content-Security-Policy de esta ventana.
+const customSkinImg = document.getElementById("custom-skin-img");
+window.usagePet.onCustomSkinUpdated((dataUrl) => {
+  customSkinImg.src = dataUrl ?? "";
+});
+window.usagePet.getCustomSkin().then(({ dataUrl }) => {
+  if (dataUrl) customSkinImg.src = dataUrl;
+});
 
 // stopPropagation en 'click' no alcanza: 'pointerdown'/'pointerup' del botón
 // burbujean a `root` ANTES de que 'click' se dispare, así que sin esto cada

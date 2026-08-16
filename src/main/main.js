@@ -5,6 +5,7 @@ const { loadPetState, savePetState } = require("./pet-state");
 const { loadAppearance, saveAppearance, SKINS } = require("./pet-appearance");
 const { checkAndNotify, sendTestNotification } = require("./notifications");
 const { loadSettings, saveSettings } = require("./settings");
+const { hasCustomSkin, readCustomSkinDataUrl, pickAndSaveCustomSkin } = require("./custom-skin");
 
 const POLL_INTERVAL_MS = 90 * 1000; // 90s: no abusar del endpoint no documentado
 const ERROR_POLL_INTERVAL_MS = 20 * 1000; // reintentar más seguido mientras esté en error
@@ -426,10 +427,35 @@ app.whenReady().then(async () => {
     if (partial.skin && !SKINS.includes(partial.skin)) {
       delete partial.skin;
     }
+    // No dejar elegir "custom" si todavía no hay ninguna imagen guardada
+    // (la UI ya deshabilita ese radio en ese caso, esto es el respaldo).
+    if (partial.skin === "custom" && !hasCustomSkin()) {
+      delete partial.skin;
+    }
     petAppearance = { ...petAppearance, ...partial };
     saveAppearance(petAppearance);
     broadcastAppearance();
     return petAppearance;
+  });
+
+  ipcMain.handle("customSkin:get", () => ({
+    exists: hasCustomSkin(),
+    dataUrl: readCustomSkinDataUrl(),
+  }));
+  ipcMain.handle("customSkin:choose", async (event) => {
+    const parentWindow = BrowserWindow.fromWebContents(event.sender);
+    const result = await pickAndSaveCustomSkin(parentWindow);
+    if (result.ok && !result.cancelled) {
+      petAppearance = { ...petAppearance, skin: "custom" };
+      saveAppearance(petAppearance);
+      broadcastAppearance();
+      for (const win of [petWindow, customizeWindow]) {
+        if (win && !win.isDestroyed()) {
+          win.webContents.send("customSkin:updated", result.dataUrl);
+        }
+      }
+    }
+    return result;
   });
 
   ipcMain.on("pet:drag-start", (_event, { screenX, screenY }) => {

@@ -30,4 +30,13 @@ contextBridge.exposeInMainWorld("usagePet", {
     ipcRenderer.on("appearance:updated", listener);
     return () => ipcRenderer.removeListener("appearance:updated", listener);
   },
+  // Skin propio: elegir imagen abre el diálogo nativo de archivos y
+  // devuelve { ok, dataUrl } | { ok:false, message } | { ok:true, cancelled:true }.
+  getCustomSkin: () => ipcRenderer.invoke("customSkin:get"),
+  chooseCustomSkin: () => ipcRenderer.invoke("customSkin:choose"),
+  onCustomSkinUpdated: (callback) => {
+    const listener = (_event, dataUrl) => callback(dataUrl);
+    ipcRenderer.on("customSkin:updated", listener);
+    return () => ipcRenderer.removeListener("customSkin:updated", listener);
+  },
 });

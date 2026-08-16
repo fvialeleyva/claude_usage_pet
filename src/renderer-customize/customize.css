@@ -181,6 +181,46 @@ body {
   cursor: pointer;
 }
 
+.option input:disabled {
+  cursor: not-allowed;
+}
+
+.option:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-skin {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.custom-skin-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.custom-skin-hint {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--text-dim);
+}
+
+.custom-skin-error {
+  margin: 0;
+  font-size: 11px;
+  color: #dc3545;
+}
+
 .panel__footer {
   align-self: stretch;
   font-size: 10.5px;

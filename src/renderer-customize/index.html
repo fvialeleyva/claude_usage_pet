@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    />
     <title>Personalizar mascota</title>
     <link rel="stylesheet" href="customize.css" />
   </head>
@@ -60,6 +63,9 @@
           <div class="skin image-skin" id="skin-mug">
             <img src="../../assets/skins/mug.png" alt="" draggable="false" />
           </div>
+          <div class="skin image-skin" id="skin-custom">
+            <img id="custom-skin-preview-img" src="" alt="" draggable="false" />
+          </div>
 
           <div id="status-badge"></div>
         </div>
@@ -95,6 +101,19 @@
           <input type="radio" name="skin" value="smiley" id="skin-radio-smiley" />
           <span>Smiley</span>
         </label>
+        <label class="option">
+          <input type="radio" name="skin" value="custom" id="skin-radio-custom" disabled />
+          <span>Mi skin</span>
+        </label>
+      </section>
+
+      <section class="custom-skin">
+        <button id="custom-skin-btn" type="button" class="custom-skin-btn">Elegir imagen…</button>
+        <p class="custom-skin-hint">
+          Sugerencia: una imagen con fondo transparente (PNG) se ve mejor
+          recortada — cualquier otra imagen también funciona.
+        </p>
+        <p id="custom-skin-error" class="custom-skin-error" hidden></p>
       </section>
 
       <section class="options" id="accessories-section">

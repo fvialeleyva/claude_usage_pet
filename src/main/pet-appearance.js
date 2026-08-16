@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const { app } = require("electron");
 
-const SKINS = ["smiley", "floppy-o", "monitor-max", "forbino-max", "calc-a-tron", "action", "mug"];
+const SKINS = ["smiley", "floppy-o", "monitor-max", "forbino-max", "calc-a-tron", "action", "mug", "custom"];
 
 const DEFAULT_APPEARANCE = {
   skin: "smiley",

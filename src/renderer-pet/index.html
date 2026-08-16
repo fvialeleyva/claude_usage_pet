@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    />
     <title>Claude Usage Pet</title>
     <link rel="stylesheet" href="pet.css" />
   </head>
@@ -59,6 +62,9 @@
       </div>
       <div class="skin image-skin" id="skin-mug">
         <img src="../../assets/skins/mug.png" alt="" draggable="false" />
+      </div>
+      <div class="skin image-skin" id="skin-custom">
+        <img id="custom-skin-img" src="" alt="" draggable="false" />
       </div>
 
       <!-- Punto de estado: solo visible con skins de imagen, ver pet.js -->
