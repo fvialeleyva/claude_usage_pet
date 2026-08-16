@@ -14,7 +14,8 @@ function loadToken() {
     return {
       ok: false,
       reason: "no-credentials-file",
-      message: `No se encontró ${CREDENTIALS_PATH}. ¿Claude Code está instalado y con sesión iniciada?`,
+      message:
+        "No encontramos una sesión de Claude en esta compu. Abrí Claude Code (la app o la terminal) e iniciá sesión, después volvé a tocar \"Reintentar\" acá.",
     };
   }
 
@@ -25,7 +26,7 @@ function loadToken() {
     return {
       ok: false,
       reason: "unreadable-credentials-file",
-      message: `No se pudo parsear ${CREDENTIALS_PATH}: ${err.message}`,
+      message: `No se pudo leer el archivo de sesión de Claude Code (${CREDENTIALS_PATH}): ${err.message}`,
     };
   }
 
@@ -34,7 +35,8 @@ function loadToken() {
     return {
       ok: false,
       reason: "missing-token",
-      message: "El archivo de credenciales no tiene claudeAiOauth.accessToken.",
+      message:
+        "Tu sesión de Claude Code parece incompleta. Probá cerrar sesión y volver a iniciarla en Claude Code.",
     };
   }
 
@@ -42,7 +44,8 @@ function loadToken() {
     return {
       ok: false,
       reason: "expired-token",
-      message: "El access token expiró. Abrí Claude Code para refrescarlo.",
+      message:
+        "Tu sesión de Claude venció. Abrí Claude Code y mandale un mensaje para renovarla (con tenerlo abierto de fondo no alcanza), después volvé a tocar \"Reintentar\" acá.",
     };
   }
 

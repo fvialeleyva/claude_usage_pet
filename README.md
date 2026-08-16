@@ -47,6 +47,20 @@ Requiere tener [Claude Code](https://claude.com/claude-code) instalado y
 con sesión iniciada (la app lee el token OAuth que Claude Code guarda en
 `~/.claude/.credentials.json`).
 
+## "No se pudo leer tu uso" / la mascota no conecta
+
+La app depende de que Claude Code tenga una sesión activa en tu máquina.
+Si el panel muestra un error:
+
+1. Abrí Claude Code (la app de escritorio o la terminal) y **mandale
+   cualquier mensaje** — con solo tenerlo abierto de fondo no alcanza,
+   tiene que hacer al menos una consulta para renovar tu sesión.
+2. Volvé al panel de Claude Usage Pet y tocá "Reintentar".
+
+Si el error persiste, el mensaje que muestra el panel dice la causa
+exacta (sesión no encontrada, sesión vencida, o que el endpoint no
+documentado cambió de formato).
+
 ## Generar el instalador
 
 ```bash
